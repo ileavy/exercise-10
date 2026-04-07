@@ -1,0 +1,95 @@
+---
+title: "exercise-10"
+format: html
+editor: visual
+---
+
+# Exercise 10: ANOVA Practice
+
+```{r}
+#Setup
+#| warning: false
+#| eval: false
+
+library(tidyverse)
+library(dplyr)
+library(skimr)
+d <- read_csv("https://raw.githubusercontent.com/difiore/ada-datasets/main/AVONETdataset1.csv", col_names = TRUE)
+
+keep <- c("Species1", "Family1", "Order1", "Beak.Length_Culmen", "Beak.Width", "Beak.Depth", "Tarsus.Length", "Wing.Length", "Tail.Length", "Mass", "Habitat", "Migration", "Trophic.Level", "Trophic.Niche", "Min.Latitude", "Max.Latitude", "Centroid.Latitude", "Primary.Lifestyle", "Range.Size")
+
+d <- d |> select(all_of(keep))
+```
+
+```{r}
+#Data Exploration
+skim(d)
+```
+
+*There are 7 character variables and 12 numeric, but this doesn't necessarily reflect which are continuous and which are categorical. Character variables include: Species, Family, Order, Habitat, Trophic Level, Trophic.Niche, and Primary.Lifestyle. In addition, Migration is categorical, though it is recorded numerically, which means it needs to be treated as a 'factor' rather than a 'numeric'. The continuous variables include: Beak Length, Beak Width, Beak Depth, Tarsus Length, Wing Length, Tail Length, Mass, Minimum Latitude, Maximum Latitude, Centroid Latitude, and Range Size.*
+
+## Challenge 1
+
+Step 1: Boxplots
+
+*"1" is a code indicating relationship between Trophic Level and log(Mass).*
+
+*"2" is a code indicating relationship between Migration category and log(Mass).*
+
+```{r}
+p1 <- ggplot(data = d |> drop_na(Trophic.Level), 
+             aes(x = Trophic.Level, y = log(Mass))) +
+  geom_boxplot() + 
+  geom_jitter(alpha = 0.1)
+p1
+```
+
+```{r}
+p2 <- ggplot(data = d |> drop_na(Migration), 
+             aes(x = as.factor(Migration), y = log(Mass))) +
+  geom_boxplot() +
+  geom_jitter(alpha = 0.1)
+p2
+```
+
+Step 2: Linear Models
+
+```{r}
+m1 <- lm(log(Mass) ~ Trophic.Level, data = d)
+summary(m1)
+```
+
+There is significant difference between all categories except for Omnivore/Carnivore (p = 0.73).
+
+```{r}
+m2 <- lm(log(Mass) ~ as.factor(Migration), data = d)
+summary(m2)
+```
+
+P values are all significant for m2.
+
+-   Examine the output of the resultant linear models. Is log(Mass) associated with either Trophic.Level or Migration category? That is, in the global test of significance, is the F statistic large enough to reject the null hypothesis of an F value of zero?
+
+-   Given the regression coefficients returned for your **Migration** model, which **Migration** categor(ies) are different than the reference level? What level is the reference level? Relevel and assess differences among the remaining pair of **Migration** categories.
+
+Step 3: Tukey Test
+
+Step 4: Permutation Approach
+
+## Challenge 2
+
+Step 1: New Variables
+
+Step 2: Boxplots
+
+Step 3: ANOVA
+
+Step 4: Passeriformes Only
+
+Step 5: Two-Factor ANOVA
+
+Step 6: with Interaction
+
+Step 7: Visualization
+
+Step 8: Checking ANOVA Requirements
